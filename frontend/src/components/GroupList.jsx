@@ -5,7 +5,7 @@ export default function GroupList() {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/groups")
+    fetch(`${import.meta.env.VITE_API_URL}/api/groups`)
       .then((res) => res.json())
       .then(setGroups);
   }, []);

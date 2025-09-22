@@ -18,11 +18,14 @@ export default function CallbackPage() {
       }
 
       try {
-        const res = await fetch("http://localhost:5000/api/auth/callback", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code }),
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/auth/callback`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code }),
+          }
+        );
 
         const data = await res.json();
         if (data.firebase_token) {

@@ -8,7 +8,7 @@ export default function DebtForm({ groupId, onAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/debts", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/debts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ group_id: groupId, payer, receiver, amount }),

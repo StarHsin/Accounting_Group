@@ -7,7 +7,7 @@ export default function GroupView({ groupId }) {
   const [debts, setDebts] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/debts/${groupId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/debts/${groupId}`)
       .then((res) => res.json())
       .then(setDebts);
   }, [groupId]);
