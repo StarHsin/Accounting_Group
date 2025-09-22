@@ -1,6 +1,6 @@
 # backend/groups.py
 from flask import Blueprint, request, jsonify
-from backend.config import db
+from .config import db
 
 bp = Blueprint("groups", __name__)
 
