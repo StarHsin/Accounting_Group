@@ -28,3 +28,4 @@ dist-ssr
 backend/serviceAccountKey.json
 
 __pycache__/
+.vercel
