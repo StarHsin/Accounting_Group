@@ -3,9 +3,9 @@ from flask import Flask
 from flask_cors import CORS
 
 # 從同 package 匯入
-from .auth import bp as auth_bp
-from .groups import bp as groups_bp
-from .debts import bp as debts_bp
+from backend.auth import bp as auth_bp
+from backend.groups import bp as groups_bp
+from backend.debts import bp as debts_bp
 
 app = Flask(__name__)
 CORS(app)
