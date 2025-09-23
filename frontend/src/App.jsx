@@ -5,6 +5,7 @@ import CallbackPage from "./components/Callback";
 import GroupView from "./components/GroupView";
 import GroupList from "./components/GroupList";
 import Homepage from "./components/Homepage"; // 新增
+import GroupDetail from "./components/GroupDetail";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/Homepage" element={<Homepage />} /> {/* 🔑 新增 */}
         <Route path="/groups" element={<GroupList />} />
         <Route path="/groups/:id" element={<GroupView />} />
+        <Route path="/groups/:id" element={<GroupDetail />} />
       </Routes>
     </Router>
   );

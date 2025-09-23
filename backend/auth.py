@@ -67,3 +67,21 @@ def callback():
     custom_token = auth.create_custom_token(user.uid)
 
     return jsonify({"firebase_token": custom_token.decode("utf-8")})
+
+
+@bp.route("/me", methods=["GET"])
+def get_me():
+    # 前端應該帶 Firebase token
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    if not token:
+        return jsonify({"error": "No token"}), 401
+    try:
+        decoded = auth.verify_id_token(token)
+        user = auth.get_user(decoded["uid"])
+        return jsonify({
+            "uid": user.uid,
+            "display_name": user.display_name,
+            "photo_url": user.photo_url
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 401
