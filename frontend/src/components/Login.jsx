@@ -4,7 +4,7 @@ import { SiLine } from "react-icons/si";
 
 export default function LoginPage() {
   const handleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/login";
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/login`;
   };
 
   return (
