@@ -102,7 +102,6 @@ export default function UnifiedModal({ setOpen, setGroups }) {
               </SelectContent>
             </Select>
           </DialogTitle>
-          <DialogDescription />
         </DialogHeader>
 
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
@@ -141,14 +140,14 @@ export default function UnifiedModal({ setOpen, setGroups }) {
             <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
-                className="border-zinc-500 text-zinc-200"
+                className="border-zinc-500 bg-transparent border-2 text-zinc-200"
                 onClick={() => setOpen(false)}
               >
                 取消
               </Button>
               <Button
                 variant="outline"
-                className="border-zinc-500 text-zinc-200"
+                className="border-zinc-500 bg-transparent border-2 text-zinc-200"
                 onClick={handleJoin}
               >
                 加入
