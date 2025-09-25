@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 export default function UnifiedModal({ setOpen, setGroups }) {
@@ -101,6 +102,7 @@ export default function UnifiedModal({ setOpen, setGroups }) {
               </SelectContent>
             </Select>
           </DialogTitle>
+          <DialogDescription />
         </DialogHeader>
 
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
