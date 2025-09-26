@@ -56,6 +56,8 @@ export default function UnifiedModal({ setOpen, setGroups }) {
   };
 
   const handleJoin = async () => {
+    const auth = getAuth(app);
+    const user = auth.currentUser;
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}api/groups/join`,
