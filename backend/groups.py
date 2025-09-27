@@ -1,8 +1,9 @@
 # backend/groups.py
-from flask import Blueprint, request, jsonify
-from .config import db
 import random
 import string
+from flask import Blueprint, request, jsonify
+from .config import db
+from firebase_admin import auth
 
 bp = Blueprint("groups", __name__)
 
@@ -64,5 +65,36 @@ def list_groups():
         g["id"] = doc.id
         # 過濾，只顯示自己有加入的群組
         if any(member["uid"] == uid for member in g.get("members", [])):
+            members = g.get("members", [])
+            for member in members:
+                try:
+                    fb_user = auth.get_user(member["uid"])
+                    member["displayName"] = fb_user.display_name
+                    member["photoUrl"] = fb_user.photo_url
+                except:
+                    pass
+            g["members"] = members
             groups.append(g)
     return jsonify(groups)
+
+
+@bp.route("/<group_id>", methods=["GET"])
+def get_group(group_id):
+    doc = db.collection("groups").document(group_id).get()
+    if not doc.exists:
+        return jsonify({"error": "Group not found"}), 404
+    data = doc.to_dict()
+    data["id"] = doc.id
+
+    # 🔹 在這裡更新成員資料
+    members = data.get("members", [])
+    for member in members:
+        try:
+            fb_user = auth.get_user(member["uid"])
+            member["displayName"] = fb_user.display_name
+            member["photoUrl"] = fb_user.photo_url
+        except:
+            pass
+    data["members"] = members
+
+    return jsonify(data)

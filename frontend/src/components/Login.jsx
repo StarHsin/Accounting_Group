@@ -1,8 +1,24 @@
 //frontend/components/Login.jsx
 import React from "react";
 import { SiLine } from "react-icons/si";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { app } from "../firebase";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const auth = getAuth(app);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // 已登入，直接跳轉
+        navigate("/Homepage");
+      }
+    });
+    return () => unsubscribe();
+  }, [auth, navigate]);
+
   const handleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/login`;
   };

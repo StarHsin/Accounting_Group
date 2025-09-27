@@ -1,7 +1,11 @@
 //frontend/components/Callback.jsx
 import React, { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { getAuth, signInWithCustomToken } from "firebase/auth";
+import {
+  getAuth,
+  signInWithCustomToken,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { LoaderCircle } from "lucide-react";
 import { app } from "../firebase";
 
@@ -10,6 +14,19 @@ export default function CallbackPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const auth = getAuth(app);
+
+    // 1️⃣ 先檢查是否已經登入過
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // 已登入，直接導向 Homepage
+        navigate("/Homepage");
+      } else {
+        // 沒有登入，處理 LINE callback
+        processLogin();
+      }
+    });
+
     const processLogin = async () => {
       const code = searchParams.get("code");
       if (!code) {
@@ -29,10 +46,9 @@ export default function CallbackPage() {
 
         const data = await res.json();
         if (data.firebase_token) {
-          const auth = getAuth(app);
           await signInWithCustomToken(auth, data.firebase_token);
           console.log("✅ 登入成功:", auth.currentUser);
-          navigate("/Homepage"); //這是登入成功後跳轉
+          navigate("/Homepage");
         } else {
           console.error("登入失敗:", data);
           navigate("/");
@@ -43,7 +59,7 @@ export default function CallbackPage() {
       }
     };
 
-    processLogin();
+    return () => unsubscribe();
   }, [searchParams, navigate]);
 
   return (

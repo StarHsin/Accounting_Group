@@ -59,6 +59,11 @@ def callback():
     # 3. 建立或取得 Firebase user
     try:
         user = auth.get_user(line_uid)
+        auth.update_user(
+            line_uid,
+            display_name=display_name,
+            photo_url=picture
+        )
     except firebase_admin._auth_utils.UserNotFoundError:
         user = auth.create_user(
             uid=line_uid, display_name=display_name, photo_url=picture)
