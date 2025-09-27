@@ -7,6 +7,7 @@ import Bottom_functionality_bar from "./tools/Bottom_functionality_bar";
 import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { app } from "../firebase";
+import TopToolsBar from "./tools/TopToolsBar";
 
 export default function Homepage() {
   const [groups, setGroups] = useState([]);
@@ -15,41 +16,28 @@ export default function Homepage() {
 
   useEffect(() => {
     const auth = getAuth(app);
-    const currentUser = auth.currentUser;
-    if (!currentUser) return;
-    setUser(currentUser);
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      if (!currentUser) return;
 
-    const fetchGroups = async () => {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/api/groups/?uid=${currentUser.uid}`
         );
+        if (!res.ok) throw new Error("Fetch groups failed");
         const data = await res.json();
-        if (res.ok) setGroups(data);
-        else console.error("Fetch groups failed:", data);
+        setGroups(data);
       } catch (err) {
         console.error(err);
       }
-    };
+    });
 
-    fetchGroups();
+    return () => unsubscribe();
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-900 font-sans text-zinc-100">
       {/* 頂部導覽列 */}
-      <header className="flex items-center justify-between p-4 bg-zinc-800 shadow-sm">
-        <TextAlignJustify className="text-zinc-100" />
-        <div className="flex items-center space-x-2">
-          <span className="text-xl font-bold text-zinc-100">
-            {new Date().toLocaleDateString()}
-          </span>
-        </div>
-        <Avatar>
-          <AvatarImage src={user?.photoURL} alt="me" />
-          <AvatarFallback>ME</AvatarFallback>
-        </Avatar>
-      </header>
+      <TopToolsBar />
 
       {/* 主要內容 */}
       <main className="flex-1 p-4 overflow-y-auto">
