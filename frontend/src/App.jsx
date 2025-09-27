@@ -13,10 +13,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/callback" element={<CallbackPage />} />
-        <Route path="/Homepage" element={<Homepage />} /> {/* 🔑 新增 */}
-        <Route path="/groups" element={<GroupList />} />
+        <Route path="/Homepage" element={<Homepage />} />
         <Route path="/groups/:id" element={<GroupView />} />
-        <Route path="/groups/:id" element={<GroupDetail />} />
       </Routes>
     </Router>
   );
