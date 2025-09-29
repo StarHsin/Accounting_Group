@@ -1,5 +1,5 @@
 //frontend/components/Login.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { SiLine } from "react-icons/si";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
