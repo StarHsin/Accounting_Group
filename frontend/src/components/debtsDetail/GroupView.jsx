@@ -1,19 +1,13 @@
-//frontend/components/GroupView.jsx
+//frontend/components/debtsDetail//GroupView.jsx
 import React, { useEffect, useState } from "react";
 import DebtForm from "./DebtForm";
-import TopToolsBar from "./tools/TopToolsBar";
+import TopToolsBar from "../tools/TopToolsBar";
 import { useParams } from "react-router-dom";
 import { getAuth } from "firebase/auth";
-import { app } from "../firebase";
+import { app } from "../../firebase";
 import { Button } from "@/components/ui/button";
-
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import DebtList from "./DebtList";
 
 export default function GroupView() {
   const [debts, setDebts] = useState([]);
@@ -33,7 +27,7 @@ export default function GroupView() {
   // 取得群組資訊（包含成員）
   useEffect(() => {
     if (!groupId) return;
-    fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}`) // 需加一個 GET /groups/:id API
+    fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}`)
       .then((res) => res.json())
       .then((data) => {
         setGroupMembers(data.members || []);
@@ -50,6 +44,7 @@ export default function GroupView() {
         setDebts(
           data.map((d) => ({
             ...d,
+            groupId,
             checked: false,
             installment: d.installment || null,
             current: d.current || null,
@@ -65,10 +60,12 @@ export default function GroupView() {
       ...debts,
       {
         ...newDebt,
+        groupId,
         checked: false,
         installment: newDebt.installment || null,
         current: newDebt.current || null,
         note: newDebt.note || "",
+        createdAt: newDebt.createdAt || null,
       },
     ]);
     setShowForm(false);
@@ -90,6 +87,7 @@ export default function GroupView() {
         </div>
 
         <Button onClick={() => setShowForm(!showForm)}>新增債務</Button>
+
         {/* 債務表單 */}
         {showForm && user && (
           <DebtForm
@@ -100,7 +98,41 @@ export default function GroupView() {
           />
         )}
 
-        <Card></Card>
+        {/* 債務清單 */}
+        <DebtList
+          debts={debts}
+          onDelete={(id) => {
+            fetch(
+              `${import.meta.env.VITE_API_URL}/api/debts/${groupId}/${id}`,
+              {
+                method: "DELETE",
+              }
+            ).then(() => setDebts(debts.filter((d) => d.id !== id)));
+          }}
+          onEdit={(updated) => {
+            // ✅ 更新陣列中的那筆資料
+            setDebts((prev) =>
+              prev.map((d) => (d.id === updated.id ? updated : d))
+            );
+          }}
+          onMarkPaid={(id) => {
+            fetch(
+              `${import.meta.env.VITE_API_URL}/api/debts/${groupId}/${id}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ paid: true }),
+              }
+            )
+              .then((res) => res.json())
+              .then((updated) => {
+                setDebts((prev) =>
+                  prev.map((d) => (d.id === id ? updated : d))
+                );
+              })
+              .catch(console.error);
+          }}
+        />
       </div>
     </div>
   );

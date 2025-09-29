@@ -2,10 +2,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./components/Login";
 import CallbackPage from "./components/Callback";
-import GroupView from "./components/GroupView";
-import GroupList from "./components/GroupList";
+import GroupView from "./components/debtsDetail/GroupView";
 import Homepage from "./components/Homepage"; // 新增
-import GroupDetail from "./components/GroupDetail";
 
 export default function App() {
   return (

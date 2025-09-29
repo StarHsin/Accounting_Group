@@ -1,4 +1,4 @@
-//frontend/components/DebtForm.jsx
+//frontend/components/debtsDetail/DebtForm.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,13 +46,22 @@ export default function DebtForm({ groupId, onAdded, members, currentUser }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const selectedPayers = members
+      .filter((m) => payerList.includes(m.uid))
+      .map((m) => ({
+        uid: m.uid,
+        displayName: m.displayName,
+        photoUrl: m.photoUrl,
+      }));
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/debts/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           group_id: groupId,
-          payer: payerList,
+          payer: selectedPayers,
           receiver: {
             uid: currentUser.uid,
             displayName: currentUser.displayName,

@@ -88,8 +88,8 @@ export default function UnifiedModal({ setOpen, setGroups }) {
   return (
     <Dialog open onOpenChange={setOpen}>
       <DialogContent className="bg-zinc-800 text-zinc-100 w-[90%] max-w-md rounded-xl shadow-lg border-0">
-        <DialogHeader className="w-[50%]">
-          <DialogTitle>
+        <DialogHeader>
+          <DialogTitle className="w-[50%]">
             <Select
               value={mode}
               onValueChange={setMode}
@@ -104,12 +104,13 @@ export default function UnifiedModal({ setOpen, setGroups }) {
               </SelectContent>
             </Select>
           </DialogTitle>
+          <DialogDescription />
         </DialogHeader>
 
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
         {mode === "create" ? (
-          <div className="flex flex-col gap-4 mt-4">
+          <div className="flex flex-col gap-4">
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -132,7 +133,7 @@ export default function UnifiedModal({ setOpen, setGroups }) {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-4 mt-4">
+          <div className="flex flex-col gap-4">
             <Input
               value={code}
               onChange={(e) => setCode(e.target.value)}
