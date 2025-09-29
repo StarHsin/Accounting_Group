@@ -35,9 +35,23 @@ export default function DebtList({ debts, onDelete, onEdit, onMarkPaid }) {
       .catch(console.error);
   };
 
+  // ✅ 排序：未付款在前，已付款在後；同類再依建立時間排序
+  const sortedDebts = [...debts].sort((a, b) => {
+    if (a.paid !== b.paid) {
+      return a.paid ? 1 : -1; // 未付款在前
+    }
+    const aTime = a.createdAt?._seconds
+      ? a.createdAt._seconds * 1000
+      : new Date(a.createdAt).getTime();
+    const bTime = b.createdAt?._seconds
+      ? b.createdAt._seconds * 1000
+      : new Date(b.createdAt).getTime();
+    return bTime - aTime; // 新的在上面
+  });
+
   return (
     <div className="flex flex-col gap-4">
-      {debts.map((d) => (
+      {sortedDebts.map((d) => (
         <DebtCard
           key={d.id}
           debt={d}
