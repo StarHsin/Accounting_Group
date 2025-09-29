@@ -1,9 +1,9 @@
-//frontend/components/debtsDetail//GroupView.jsx
+// frontend/components/debtsDetail/GroupView.jsx
 import React, { useEffect, useState } from "react";
 import DebtForm from "./DebtForm";
 import TopToolsBar from "../tools/TopToolsBar";
 import { useParams } from "react-router-dom";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../firebase";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,23 +14,26 @@ export default function GroupView() {
   const [showForm, setShowForm] = useState(false);
   const [user, setUser] = useState(null);
   const [groupMembers, setGroupMembers] = useState([]);
-  const { id } = useParams(); // id 對應路由的 :id
+  const [groupName, setGroupName] = useState(""); // ✅ 群組名
+  const { id } = useParams();
   const groupId = id;
 
-  // 取得使用者資訊
   useEffect(() => {
     const auth = getAuth(app);
-    const currentUser = auth.currentUser;
-    if (currentUser) setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
   }, []);
 
-  // 取得群組資訊（包含成員）
+  // 取得群組資訊（包含成員 & 群組名）
   useEffect(() => {
     if (!groupId) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}`)
       .then((res) => res.json())
       .then((data) => {
         setGroupMembers(data.members || []);
+        setGroupName(data.name || "群組");
       })
       .catch(console.error);
   }, [groupId]);
@@ -73,7 +76,8 @@ export default function GroupView() {
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-900 font-sans text-zinc-100">
-      <TopToolsBar />
+      {/* ✅ 顯示群組名 */}
+      <TopToolsBar title={groupName} />
 
       <div className="p-4 flex flex-col gap-4">
         <div className="flex items-center gap-2">
@@ -86,9 +90,10 @@ export default function GroupView() {
           ))}
         </div>
 
-        <Button onClick={() => setShowForm(!showForm)}>新增債務</Button>
+        {user && (
+          <Button onClick={() => setShowForm(!showForm)}>新增債務</Button>
+        )}
 
-        {/* 債務表單 */}
         {showForm && user && (
           <DebtForm
             groupId={groupId}
@@ -98,7 +103,6 @@ export default function GroupView() {
           />
         )}
 
-        {/* 債務清單 */}
         <DebtList
           debts={debts}
           onDelete={(id) => {
@@ -110,7 +114,6 @@ export default function GroupView() {
             ).then(() => setDebts(debts.filter((d) => d.id !== id)));
           }}
           onEdit={(updated) => {
-            // ✅ 更新陣列中的那筆資料
             setDebts((prev) =>
               prev.map((d) => (d.id === updated.id ? updated : d))
             );

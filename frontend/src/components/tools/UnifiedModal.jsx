@@ -60,7 +60,7 @@ export default function UnifiedModal({ setOpen, setGroups }) {
     const user = auth.currentUser;
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}api/groups/join`,
+        `${import.meta.env.VITE_API_URL}/api/groups/join`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
