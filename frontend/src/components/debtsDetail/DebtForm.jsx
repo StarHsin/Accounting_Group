@@ -87,46 +87,59 @@ export default function DebtForm({ groupId, onAdded, members, currentUser }) {
     }
   };
 
+  const commonInputClass =
+    "bg-zinc-700 text-white placeholder:text-zinc-400 border-zinc-600 focus:border-green-500 transition-colors rounded-xl h-12";
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-2 mb-4 p-4 bg-zinc-800 rounded-lg"
+      className="flex flex-col gap-3 mb-4 p-5 bg-zinc-800 rounded-xl shadow-2xl border border-zinc-700"
     >
-      {/* 下拉多選 */}
+      {/* 下拉多選 - 優化樣式 */}
       <div className="relative" ref={dropdownRef}>
         {" "}
         {/* 3️⃣ 加上 ref */}
         <div
-          className="bg-zinc-900 text-white p-2 rounded-lg cursor-pointer"
+          className={`
+            ${commonInputClass} 
+            flex items-center p-3 cursor-pointer h-12
+            ${dropdownOpen ? "rounded-b-none border-b-0" : ""}
+          `}
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
-          {payerList.length === 0
-            ? "選擇付款者"
-            : payerOptions
-                .filter((m) => payerList.includes(m.uid))
-                .map((m) => m.displayName)
-                .join(", ")}
+          <span
+            className={payerList.length === 0 ? "text-zinc-400" : "text-white"}
+          >
+            {payerList.length === 0
+              ? "選擇付款者"
+              : payerOptions
+                  .filter((m) => payerList.includes(m.uid))
+                  .map((m) => m.displayName)
+                  .join(", ")}
+          </span>
         </div>
         {dropdownOpen && (
-          <div className="absolute mt-1 w-full bg-zinc-900 border border-zinc-700 rounded-lg z-10 max-h-60 overflow-auto">
-            <label className="flex items-center gap-2 p-2 border-b border-zinc-700 cursor-pointer">
+          <div className="absolute mt-0 w-full bg-zinc-700 border border-zinc-600 rounded-b-xl z-10 max-h-60 overflow-auto shadow-xl">
+            <label className="flex items-center gap-3 p-3 border-b border-zinc-600 cursor-pointer bg-zinc-600">
+              {" "}
+              {/* 全選行使用不同底色 */}
               <Checkbox
                 checked={payerList.length === payerOptions.length}
                 onCheckedChange={toggleAll}
-                className="border border-zinc-200"
+                className="border-2 border-white data-[state=checked]:bg-green-500 data-[state=checked]:text-white"
               />
-              <span className="text-white">全選</span>
+              <span className="text-white font-semibold">全選</span>
             </label>
 
             {payerOptions.map((m) => (
               <label
                 key={m.uid}
-                className="flex items-center gap-2 p-2 cursor-pointer hover:bg-zinc-800"
+                className="flex items-center gap-3 p-3 cursor-pointer hover:bg-zinc-600 transition-colors"
               >
                 <Checkbox
                   checked={payerList.includes(m.uid)}
                   onCheckedChange={() => togglePayer(m.uid)}
-                  className="border border-zinc-200"
+                  className="border-2 border-zinc-400 data-[state=checked]:bg-green-500 data-[state=checked]:text-white"
                 />
                 <span className="text-white">{m.displayName}</span>
               </label>
@@ -140,29 +153,36 @@ export default function DebtForm({ groupId, onAdded, members, currentUser }) {
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         placeholder="金額"
-        className="bg-zinc-900 text-white"
+        className={commonInputClass}
       />
       <Input
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="備註"
-        className="bg-zinc-900 text-white"
+        className={commonInputClass}
       />
-      <Input
-        type="number"
-        value={installment}
-        onChange={(e) => setInstallment(e.target.value)}
-        placeholder="總期數"
-        className="bg-zinc-900 text-white"
-      />
-      <Input
-        type="number"
-        value={current}
-        onChange={(e) => setCurrent(e.target.value)}
-        placeholder="目前期數"
-        className="bg-zinc-900 text-white"
-      />
-      <Button type="submit">新增</Button>
+      <div className="flex gap-2">
+        <Input
+          type="number"
+          value={installment}
+          onChange={(e) => setInstallment(e.target.value)}
+          placeholder="總期數"
+          className={commonInputClass}
+        />
+        <Input
+          type="number"
+          value={current}
+          onChange={(e) => setCurrent(e.target.value)}
+          placeholder="目前期數"
+          className={commonInputClass}
+        />
+      </div>
+      <Button
+        type="submit"
+        className="mt-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl h-12 shadow-lg"
+      >
+        新增
+      </Button>
     </form>
   );
 }
