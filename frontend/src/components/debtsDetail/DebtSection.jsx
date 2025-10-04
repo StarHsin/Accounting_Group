@@ -21,7 +21,7 @@ export default function DebtSection({
       <DebtList
         debts={debts}
         onDelete={(id) => {
-          fetch(`http://localhost:5000/api/debts/${groupId}/${id}`, {
+          fetch(`${import.meta.env.VITE_API_URL}/api/debts/${groupId}/${id}`, {
             method: "DELETE",
           }).then(() => setDebts((prev) => prev.filter((d) => d.id !== id)));
         }}
@@ -31,7 +31,7 @@ export default function DebtSection({
           );
         }}
         onMarkPaid={(id) => {
-          fetch(`http://localhost:5000/api/debts/${groupId}/${id}`, {
+          fetch(`${import.meta.env.VITE_API_URL}/api/debts/${groupId}/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ paid: true }),
