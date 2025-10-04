@@ -1,5 +1,7 @@
+"use client";
+
 //frontend/components/debtsDetail/DebtList.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import DebtCard from "./DebtCard";
 import EditDebtDialog from "./EditDebtDialog";
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog";

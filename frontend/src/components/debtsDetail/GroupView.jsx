@@ -1,5 +1,7 @@
+"use client";
+
 // frontend/components/debtsDetail/GroupView.jsx
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import DebtForm from "./DebtForm";
 import TopToolsBar from "../tools/TopToolsBar";
 import { useParams } from "react-router-dom";
@@ -9,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import DebtStats from "./DebtStats";
 import GroupMembers from "./GroupMembers";
 import DebtSection from "./DebtSection";
+import { Plus, X } from "lucide-react";
 
 export default function GroupView() {
   const [debts, setDebts] = useState([]);
@@ -87,18 +90,32 @@ export default function GroupView() {
   }, [debts, user, showOnlyMine]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-900 font-sans text-zinc-100 pb-20">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-zinc-900 via-black to-zinc-900 font-sans text-zinc-100 pb-20">
       <TopToolsBar title={groupName} />
-      <div className="p-4 flex flex-col gap-5">
+      <div className="p-4 flex flex-col gap-6">
         <GroupMembers members={groupMembers} />
         <DebtStats debts={debts} members={groupMembers} currentUser={user} />
 
         {user && (
           <Button
             onClick={() => setShowForm(!showForm)}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg transition-all"
+            className={`w-full font-semibold rounded-xl shadow-lg transition-all h-12 flex items-center justify-center gap-2 ${
+              showForm
+                ? "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700"
+                : "bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700"
+            }`}
           >
-            {showForm ? "關閉新增表單" : "新增債務"}
+            {showForm ? (
+              <>
+                <X className="w-5 h-5" />
+                關閉新增表單
+              </>
+            ) : (
+              <>
+                <Plus className="w-5 h-5" />
+                新增債務
+              </>
+            )}
           </Button>
         )}
 

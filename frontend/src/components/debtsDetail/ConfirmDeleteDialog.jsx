@@ -1,3 +1,5 @@
+"use client";
+
 //frontend/components/debtsDetail/ConfirmDeleteDialog.jsx
 import {
   AlertDialog,
@@ -9,7 +11,6 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import React from "react";
 
 export default function ConfirmDeleteDialog({ open, onCancel, onConfirm }) {
   return (
