@@ -31,6 +31,11 @@ export default function DebtCard({
     }
   };
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    if (onDelete) onDelete(debt.id);
+  };
+
   // 決定文字顏色
   const textColor = debt.paid ? "text-zinc-500" : "text-white";
   const amountColor = debt.paid ? "text-zinc-500" : "text-green-400";
@@ -47,10 +52,7 @@ export default function DebtCard({
         `}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          onDelete(debt.id);
-        }}
+        onContextMenu={handleContextMenu}
       >
         {/* 左側：收款人 + 備註 + 時間 + 分期狀態 */}
         <div className="flex items-start gap-4 flex-1 min-w-0">
