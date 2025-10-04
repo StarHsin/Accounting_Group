@@ -20,14 +20,14 @@ export default function DebtCard({
     const endX = e.changedTouches[0].clientX;
     const diff = debt._touchStartX - endX;
 
-    if (diff > 50) {
-      // 向左滑動超過 50px
-      onSwipe(debt.id);
-    } else if (diff < -50) {
-      // 向右滑動超過 50px
-      onSwipe(null);
-    } else {
-      // 輕微滑動或點擊，保持現狀
+    if (!debt.paid) {
+      if (diff > 50) {
+        // 向左滑動超過 50px
+        onSwipe(debt.id);
+      } else if (diff < -50) {
+        // 向右滑動超過 50px
+        onSwipe(null);
+      }
     }
   };
 
