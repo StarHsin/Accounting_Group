@@ -36,18 +36,18 @@ export default function DebtStats({ debts = [], members = [], currentUser }) {
     return (
       <div className="flex flex-col items-center">
         <Avatar
-          className={`w-20 h-20 border-4 ${colorClass} shadow-lg ring-4 ring-zinc-900`}
+          className={`w-15 h-15 border-4 ${colorClass} shadow-lg ring-4 ring-zinc-900`}
         >
           <AvatarImage src={member.photoUrl} alt={member.displayName} />
-          <AvatarFallback className="bg-zinc-600 text-white text-xl">
+          <AvatarFallback className="bg-zinc-600 text-white text-lg">
             {member.displayName?.[0]}
           </AvatarFallback>
         </Avatar>
-        <p className="mt-2 text-white font-bold text-lg">
+        <p className="mt-2 text-white font-bold text-sm">
           {member.displayName}
         </p>
         <Badge
-          className={`mt-1 text-sm font-semibold ${
+          className={`mt-1 text-xs font-bold ${
             isCreditor ? "bg-green-600" : "bg-red-600"
           }`}
         >
@@ -61,7 +61,7 @@ export default function DebtStats({ debts = [], members = [], currentUser }) {
   };
 
   return (
-    <div className="mt-6 flex flex-col gap-6">
+    <div className="flex flex-col gap-6">
       {/* 💰群組未結總覽 */}
       <Card className="bg-gradient-to-br from-zinc-700 to-zinc-900 border-zinc-600 p-6 text-white rounded-2xl shadow-2xl col-span-1 md:col-span-2">
         <h2 className="text-2xl font-extrabold mb-4 text-center border-b border-zinc-600 pb-2 text-yellow-400">
@@ -100,14 +100,12 @@ export default function DebtStats({ debts = [], members = [], currentUser }) {
       </Card>
 
       {/* 🧍最大債主與負債者區塊（並排） */}
-      <Card className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 shadow-xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <Card className="bg-zinc-800 border border-zinc-700 rounded-2xl p-4 shadow-xl">
+        <div className="grid grid-cols-2 gap-6 items-start">
           {/* 最大債主 */}
           <div className="flex flex-col items-center text-center">
-            <h3 className="text-xl font-bold text-green-400 mb-1">最大債主</h3>
-            <p className="text-sm text-zinc-400 mb-3">
-              這位成員應收回的金額最多
-            </p>
+            <h3 className="text-lg font-bold text-green-400 mb-1">最大債主</h3>
+            <p className="text-sm text-zinc-400 mb-3">這位成員收回最多</p>
             <CenterMemberAvatar
               member={biggestCreditor}
               role="債主"
@@ -121,10 +119,8 @@ export default function DebtStats({ debts = [], members = [], currentUser }) {
 
           {/* 最大負債者 */}
           <div className="flex flex-col items-center text-center">
-            <h3 className="text-xl font-bold text-red-400 mb-1">最大負債者</h3>
-            <p className="text-sm text-zinc-400 mb-3">
-              這位成員應支付的欠款最多
-            </p>
+            <h3 className="text-lg font-bold text-red-400 mb-1">最大負債者</h3>
+            <p className="text-sm text-zinc-400 mb-3">這位成員欠款最多</p>
             <CenterMemberAvatar
               member={biggestDebtor}
               role="負債者"
