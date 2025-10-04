@@ -18,7 +18,7 @@ export default function ConfirmDeleteDialog({ open, onCancel, onConfirm }) {
         <AlertDialogHeader>
           <AlertDialogTitle>確定要刪除嗎？</AlertDialogTitle>
           <AlertDialogDescription>
-            這個動作無法復原，刪除後資料將永久消失。
+            這個動作無法復原，刪除後全組資料將永久消失。
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

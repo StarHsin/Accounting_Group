@@ -70,3 +70,53 @@ def delete_debt(group_id, debt_id):
 
     debt_ref.delete()
     return jsonify({"success": True, "id": debt_id})
+
+# 🔹群組債務統計（搬移前端運算邏輯到後端）
+
+
+@bp.route("/stats/<group_id>", methods=["GET"])
+def debt_stats(group_id):
+    try:
+        # 讀取該群組的債務資料
+        debts_ref = db.collection("groups").document(
+            group_id).collection("debts")
+        debts = [doc.to_dict() for doc in debts_ref.stream()]
+
+        unpaid = [d for d in debts if not d.get("paid", False)]
+        debt_by_member = {}
+        receive_by_member = {}
+
+        for d in unpaid:
+            amount = float(d.get("amount", 0) or 0)
+            receiver = d.get("receiver")
+            if receiver and "uid" in receiver:
+                receive_by_member[receiver["uid"]] = receive_by_member.get(
+                    receiver["uid"], 0) + amount
+
+            payer_list = d.get("payer", [])
+            if isinstance(payer_list, list) and len(payer_list) > 0:
+                share = amount / len(payer_list)
+                for p in payer_list:
+                    if "uid" in p:
+                        debt_by_member[p["uid"]] = debt_by_member.get(
+                            p["uid"], 0) + share
+
+        total_debt = sum(debt_by_member.values())
+        total_receive = sum(receive_by_member.values())
+
+        biggest_debtor_id = max(
+            debt_by_member, key=debt_by_member.get, default=None)
+        biggest_creditor_id = max(
+            receive_by_member, key=receive_by_member.get, default=None)
+
+        return jsonify({
+            "totalDebt": total_debt,
+            "totalReceive": total_receive,
+            "debtByMember": debt_by_member,
+            "receiveByMember": receive_by_member,
+            "biggestDebtorId": biggest_debtor_id,
+            "biggestCreditorId": biggest_creditor_id
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

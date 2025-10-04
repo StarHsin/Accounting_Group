@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../firebase";
 import { Button } from "@/components/ui/button";
-
+import DebtStats from "./DebtStats";
 import GroupMembers from "./GroupMembers";
 import DebtSection from "./DebtSection";
 
@@ -91,6 +91,7 @@ export default function GroupView() {
       <TopToolsBar title={groupName} />
       <div className="p-4 flex flex-col gap-5">
         <GroupMembers members={groupMembers} />
+        <DebtStats debts={debts} members={groupMembers} currentUser={user} />
 
         {user && (
           <Button
