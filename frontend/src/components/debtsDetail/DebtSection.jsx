@@ -1,0 +1,48 @@
+// frontend/components/debtsDetail/DebtSection.jsx
+import DebtList from "./DebtList";
+import DebtFilterMenu from "./DebtFilterMenu";
+
+export default function DebtSection({
+  debts,
+  groupId,
+  showOnlyMine,
+  setShowOnlyMine,
+  setDebts,
+}) {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-xl font-bold text-zinc-100 mt-2">債務列表</h2>
+        <DebtFilterMenu
+          showOnlyMine={showOnlyMine}
+          setShowOnlyMine={setShowOnlyMine}
+        />
+      </div>
+      <DebtList
+        debts={debts}
+        onDelete={(id) => {
+          fetch(`http://localhost:5000/api/debts/${groupId}/${id}`, {
+            method: "DELETE",
+          }).then(() => setDebts((prev) => prev.filter((d) => d.id !== id)));
+        }}
+        onEdit={(updated) => {
+          setDebts((prev) =>
+            prev.map((d) => (d.id === updated.id ? updated : d))
+          );
+        }}
+        onMarkPaid={(id) => {
+          fetch(`http://localhost:5000/api/debts/${groupId}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paid: true }),
+          })
+            .then((res) => res.json())
+            .then((updated) => {
+              setDebts((prev) => prev.map((d) => (d.id === id ? updated : d)));
+            })
+            .catch(console.error);
+        }}
+      />
+    </div>
+  );
+}
