@@ -63,7 +63,7 @@ export default function DebtStats({ debts = [], members = [], currentUser }) {
   return (
     <div className="flex flex-col gap-6">
       {/* 💰群組未結總覽 */}
-      <Card className="bg-gradient-to-br from-zinc-700 to-zinc-900 border-zinc-600 p-6 text-white rounded-2xl shadow-2xl col-span-1 md:col-span-2">
+      <Card className="bg-gradient-to-br from-zinc-700 to-zinc-900 border-zinc-600 p-6 text-white rounded-2xl shadow-2xl col-span-2">
         <h2 className="text-2xl font-extrabold mb-4 text-center border-b border-zinc-600 pb-2 text-yellow-400">
           💰 群組未結總覽
         </h2>
