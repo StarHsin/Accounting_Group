@@ -49,7 +49,7 @@ export default function DebtCard({
     <div className="relative group">
       <Card
         className={`
-          ${cardBg} rounded-2xl shadow-xl p-5 flex justify-between items-center transition-all duration-300 ease-out 
+          ${cardBg} rounded-2xl shadow-xl py-5 px-3 flex justify-between items-center transition-all duration-300 ease-out 
           ${isPaid ? "opacity-60" : "hover:shadow-2xl hover:scale-[1.02]"}
           ${swipedId === debt.id ? "-translate-x-40" : "translate-x-0"}
           border-2 relative overflow-hidden
@@ -145,15 +145,13 @@ export default function DebtCard({
         {/* 右側：金額 + 分攤人頭像 */}
         <div className="flex flex-col items-end gap-3 ml-4 relative z-10">
           <div
-            className={`px-4 py-2 rounded-xl ${
+            className={`px-2 py-2 rounded-xl ${
               isPaid
                 ? "bg-zinc-700/50"
                 : "bg-emerald-500/10 border border-emerald-500/30"
             }`}
           >
-            <span
-              className={`text-2xl font-extrabold font-mono ${amountColor}`}
-            >
+            <span className={`text-xl font-extrabold font-mono ${amountColor}`}>
               NT${debt.amount.toLocaleString()}
             </span>
           </div>
