@@ -1,4 +1,6 @@
-// frontend/components/debtsDetail/DebtSection.jsx
+"use client";
+
+//frontend/components/debtsDetail/DebtSection.jsx
 import DebtList from "./DebtList";
 import DebtFilterMenu from "./DebtFilterMenu";
 
@@ -24,6 +26,7 @@ export default function DebtSection({
       </div>
       <DebtList
         debts={debts}
+        groupId={groupId}
         onDelete={(id) => {
           fetch(`${import.meta.env.VITE_API_URL}/api/debts/${groupId}/${id}`, {
             method: "DELETE",
@@ -33,18 +36,6 @@ export default function DebtSection({
           setDebts((prev) =>
             prev.map((d) => (d.id === updated.id ? updated : d))
           );
-        }}
-        onMarkPaid={(id) => {
-          fetch(`${import.meta.env.VITE_API_URL}/api/debts/${groupId}/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ paid: true }),
-          })
-            .then((res) => res.json())
-            .then((updated) => {
-              setDebts((prev) => prev.map((d) => (d.id === id ? updated : d)));
-            })
-            .catch(console.error);
         }}
       />
     </div>

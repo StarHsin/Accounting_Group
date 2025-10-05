@@ -14,6 +14,7 @@ export default function DebtCard({
   onDelete,
   onEdit,
   onMarkPaid,
+  onMarkPayerPaid,
 }) {
   const handleTouchStart = (e) => {
     debt._touchStartX = e.touches[0].clientX;
@@ -35,6 +36,12 @@ export default function DebtCard({
   const handleContextMenu = (e) => {
     e.preventDefault();
     if (onDelete) onDelete(debt.id);
+  };
+
+  const handlePayerClick = (payerUid, payerName) => {
+    if (onMarkPayerPaid && !debt.paid) {
+      onMarkPayerPaid(debt.id, payerUid, payerName);
+    }
   };
 
   const isPaid = debt.paid;
@@ -158,21 +165,33 @@ export default function DebtCard({
           <div className="flex -space-x-2 justify-end">
             {Array.isArray(debt.payer) &&
               debt.payer.map((p, idx) => (
-                <Avatar
+                <div
                   key={p.uid}
-                  className={`w-8 h-8 border-2 ${
-                    isPaid ? "border-zinc-700" : "border-zinc-900"
-                  } shadow-md transition-transform hover:scale-110 hover:z-10`}
-                  style={{ zIndex: debt.payer.length - idx }}
+                  className="relative"
+                  onClick={() => handlePayerClick(p.uid, p.displayName)}
                 >
-                  <AvatarImage
-                    src={p.photoUrl || "/placeholder.svg"}
-                    alt={p.displayName}
-                  />
-                  <AvatarFallback className="text-xs bg-zinc-700 text-white font-semibold">
-                    {p.displayName?.[0]}
-                  </AvatarFallback>
-                </Avatar>
+                  <Avatar
+                    className={`w-8 h-8 border-2 ${
+                      debt.paid ? "border-zinc-700" : "border-zinc-900"
+                    } shadow-md transition-transform hover:scale-110 hover:z-10 cursor-pointer ${
+                      !p.paid && !debt.paid ? "hover:border-emerald-500/50" : ""
+                    }`}
+                    style={{ zIndex: debt.payer.length - idx }}
+                  >
+                    <AvatarImage
+                      src={p.photoUrl || "/placeholder.svg"}
+                      alt={p.displayName}
+                    />
+                    <AvatarFallback className="text-xs bg-zinc-700 text-white font-semibold">
+                      {p.displayName?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  {p.paid && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                      <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                    </div>
+                  )}
+                </div>
               ))}
           </div>
         </div>
