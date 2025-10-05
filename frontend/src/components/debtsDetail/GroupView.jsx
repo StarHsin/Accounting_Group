@@ -6,6 +6,11 @@ import DebtForm from "./DebtForm";
 import TopToolsBar from "../tools/TopToolsBar";
 import { useParams } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 import { app } from "../../firebase";
 import { Button } from "@/components/ui/button";
 import DebtStats from "./DebtStats";
@@ -20,6 +25,9 @@ export default function GroupView() {
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [showOnlyMine, setShowOnlyMine] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [statsOpen, setStatsOpen] = useState(true);
+
   const { id } = useParams();
   const groupId = id;
 
@@ -81,21 +89,38 @@ export default function GroupView() {
 
   // 篩選邏輯
   const filteredDebts = useMemo(() => {
-    if (!user || !showOnlyMine) return debts;
+    if (selectedMembers.length === 0) return debts; // 沒選 → 顯示全部
     return debts.filter(
       (d) =>
-        d.receiver?.uid === user.uid ||
-        (Array.isArray(d.payer) && d.payer.some((p) => p.uid === user.uid))
+        selectedMembers.includes(d.receiver?.uid) ||
+        (Array.isArray(d.payer) &&
+          d.payer.some((p) => selectedMembers.includes(p.uid)))
     );
-  }, [debts, user, showOnlyMine]);
+  }, [debts, selectedMembers]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-zinc-900 via-black to-zinc-900 font-sans text-zinc-100 pb-20">
       <TopToolsBar title={groupName} />
       <div className="p-4 flex flex-col gap-6">
         <GroupMembers members={groupMembers} />
-        <DebtStats debts={debts} members={groupMembers} currentUser={user} />
 
+        {/* Collapsible DebtStats */}
+        <Collapsible open={statsOpen} onOpenChange={setStatsOpen}>
+          <CollapsibleTrigger asChild>
+            <Button className="w-full bg-yellow-600 hover:bg-yellow-700 font-bold text-white rounded-xl shadow-lg">
+              {statsOpen ? "收起統計" : "展開統計"}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-4">
+              <DebtStats
+                debts={debts}
+                members={groupMembers}
+                currentUser={user}
+              />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
         {user && (
           <Button
             onClick={() => setShowForm(!showForm)}
@@ -118,7 +143,6 @@ export default function GroupView() {
             )}
           </Button>
         )}
-
         {showForm && user && (
           <DebtForm
             groupId={groupId}
@@ -127,12 +151,13 @@ export default function GroupView() {
             currentUser={user}
           />
         )}
-
         <DebtSection
           debts={filteredDebts}
           groupId={groupId}
-          showOnlyMine={showOnlyMine}
-          setShowOnlyMine={setShowOnlyMine}
+          members={groupMembers}
+          currentUser={user}
+          selectedMembers={selectedMembers}
+          setSelectedMembers={setSelectedMembers}
           setDebts={setDebts}
         />
       </div>

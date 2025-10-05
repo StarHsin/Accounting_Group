@@ -5,8 +5,10 @@ import DebtFilterMenu from "./DebtFilterMenu";
 export default function DebtSection({
   debts,
   groupId,
-  showOnlyMine,
-  setShowOnlyMine,
+  members,
+  currentUser,
+  selectedMembers,
+  setSelectedMembers,
   setDebts,
 }) {
   return (
@@ -14,8 +16,10 @@ export default function DebtSection({
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl font-bold text-zinc-100 mt-2">債務列表</h2>
         <DebtFilterMenu
-          showOnlyMine={showOnlyMine}
-          setShowOnlyMine={setShowOnlyMine}
+          members={members}
+          currentUser={currentUser}
+          selectedMembers={selectedMembers}
+          setSelectedMembers={setSelectedMembers}
         />
       </div>
       <DebtList
