@@ -17,6 +17,7 @@ export default function DebtList({ debts, groupId, onDelete, onEdit }) {
     note: "",
     installment: "",
     current: "",
+    due_date: null,
   });
 
   const handleEditSave = () => {
@@ -115,6 +116,7 @@ export default function DebtList({ debts, groupId, onDelete, onEdit }) {
               note: debt.note || "",
               installment: debt.installment || "",
               current: debt.current || "",
+              due_date: debt.due_date || null,
             });
           }}
           onMarkPaid={handleMarkAllPaid}

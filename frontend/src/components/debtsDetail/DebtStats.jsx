@@ -331,7 +331,7 @@ export default function DebtStats({ debts = [], members = [], currentUser }) {
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <h3 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
-                最還款者
+                最佳還款者
               </h3>
             </div>
             <p className="text-sm text-zinc-400 mb-4">這位成員最努力還款</p>
@@ -348,7 +348,7 @@ export default function DebtStats({ debts = [], members = [], currentUser }) {
                 />
               </PopoverTrigger>
               <PopoverContent className="bg-zinc-900 border-zinc-700 text-zinc-100 max-w-xs w-auto">
-                <p>最還款者是指群組中還款次數（分期期數）最高的成員。</p>
+                <p>最佳還款者是指群組中還款次數（分期期數）最高的成員。</p>
               </PopoverContent>
             </Popover>
           </div>

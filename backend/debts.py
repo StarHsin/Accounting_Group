@@ -1,3 +1,4 @@
+# backend/debts.py
 from flask import Blueprint, request, jsonify
 from .config import db
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
@@ -26,6 +27,7 @@ def add_debt():
         "note": data.get("note"),
         "installment": data.get("installment"),
         "current": data.get("current"),
+        "due_date": data.get("due_date"),
         "paid": False,
         "createdAt": SERVER_TIMESTAMP,
         "payments": [],

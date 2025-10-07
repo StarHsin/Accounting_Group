@@ -12,7 +12,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { DollarSign, FileText, Calendar, Save, X } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import {
+  DollarSign,
+  FileText,
+  Calendar as CalendarIcon,
+  Save,
+  X,
+  CalendarDays,
+  CalendarIcon as CalendarIcon2,
+} from "lucide-react";
 
 export default function EditDebtDialog({
   open,
@@ -76,11 +92,11 @@ export default function EditDebtDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label className="text-zinc-300 font-semibold flex items-center gap-2 text-sm">
-                <Calendar className="w-4 h-4 text-emerald-400" />
+                <CalendarIcon className="w-4 h-4 text-emerald-400" />
                 分期
               </Label>
               <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
                   type="number"
                   value={form.installment}
@@ -95,11 +111,11 @@ export default function EditDebtDialog({
 
             <div className="space-y-2">
               <Label className="text-zinc-300 font-semibold flex items-center gap-2 text-sm">
-                <Calendar className="w-4 h-4 text-emerald-400" />
+                <CalendarIcon className="w-4 h-4 text-emerald-400" />
                 當前期數
               </Label>
               <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
                   type="number"
                   value={form.current}
@@ -111,6 +127,48 @@ export default function EditDebtDialog({
                 />
               </div>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-zinc-300 font-semibold flex items-center gap-2">
+              <CalendarDays className="w-4 h-4 text-emerald-400" />
+              到期日期 (選填)
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-zinc-800 border-2 border-zinc-700 focus:border-emerald-500",
+                    !form.due_date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon2 className="mr-2 h-4 w-4" />
+                  {form.due_date ? (
+                    format(new Date(form.due_date), "PPP")
+                  ) : (
+                    <span>選擇到期日期</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="overflow-hidden w-auto p-0 bg-zinc-800 border-zinc-700"
+                align="start"
+              >
+                <Calendar
+                  mode="single"
+                  selected={form.due_date ? new Date(form.due_date) : undefined}
+                  captionLayout="dropdown"
+                  onSelect={(date) =>
+                    setForm({
+                      ...form,
+                      due_date: date ? date.toISOString() : null,
+                    })
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 

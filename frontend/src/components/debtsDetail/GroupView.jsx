@@ -65,6 +65,7 @@ export default function GroupView() {
             installment: d.installment || null,
             current: d.current || null,
             note: d.note || "",
+            due_date: d.due_date || null,
           }))
         )
       )
@@ -82,6 +83,7 @@ export default function GroupView() {
         current: newDebt.current || null,
         note: newDebt.note || "",
         createdAt: newDebt.createdAt || null,
+        due_date: newDebt.due_date || null,
       },
     ]);
     setShowForm(false);

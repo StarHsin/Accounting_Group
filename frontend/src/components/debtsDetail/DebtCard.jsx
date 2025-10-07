@@ -45,12 +45,28 @@ export default function DebtCard({
   };
 
   const isPaid = debt.paid;
+  const hasDueDate = !!debt.due_date;
   const cardBg = isPaid
     ? "bg-zinc-800/50 border-zinc-700/50"
+    : hasDueDate
+    ? "bg-gradient-to-br from-zinc-800 to-zinc-900 border-red-500 hover:border-red-400/50"
     : "bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700 hover:border-emerald-500/50";
   const textColor = isPaid ? "text-zinc-500" : "text-white";
   const amountColor = isPaid ? "text-zinc-500" : "text-emerald-400";
   const installmentColor = isPaid ? "text-zinc-600" : "text-zinc-400";
+
+  const formatDueDate = (dueDate) => {
+    if (!dueDate) return null;
+    try {
+      const date = new Date(dueDate);
+      return date.toLocaleDateString("zh-TW", {
+        month: "long",
+        day: "numeric",
+      });
+    } catch {
+      return null;
+    }
+  };
 
   return (
     <div className="relative group">
@@ -65,7 +81,10 @@ export default function DebtCard({
         onTouchEnd={handleTouchEnd}
         onContextMenu={handleContextMenu}
       >
-        {!isPaid && (
+        {!isPaid && hasDueDate && (
+          <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        )}
+        {!isPaid && !hasDueDate && (
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
         )}
 
@@ -78,27 +97,40 @@ export default function DebtCard({
           </div>
         )}
 
-        {/* 左側：收款人 + 備註 + 時間 + 分期狀態 */}
+        {/* 左側：收款人 + 備註 + 時間 + 分期狀態 + 到期日 */}
         <div className="flex items-start gap-4 flex-1 min-w-0 relative z-10">
-          <div className="relative">
-            <Avatar
-              className={`w-14 h-14 border-2 ${
-                isPaid ? "border-zinc-700" : "border-emerald-500/50"
-              } shadow-lg ring-2 ring-zinc-900/50`}
-            >
-              <AvatarImage
-                src={debt.receiver?.photoUrl || "/placeholder.svg"}
-                alt={debt.receiver?.displayName}
-              />
-              <AvatarFallback className="bg-zinc-700 text-white text-lg font-semibold">
-                {debt.receiver?.displayName
-                  ? debt.receiver.displayName[0]
-                  : "?"}
-              </AvatarFallback>
-            </Avatar>
-            {!isPaid && (
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-                <CreditCard className="w-3 h-3 text-white" />
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              <Avatar
+                className={`w-14 h-14 border-2 ${
+                  isPaid
+                    ? "border-zinc-700"
+                    : hasDueDate
+                    ? "border-red-500/50"
+                    : "border-emerald-500/50"
+                } shadow-lg ring-2 ring-zinc-900/50`}
+              >
+                <AvatarImage
+                  src={debt.receiver?.photoUrl || "/placeholder.svg"}
+                  alt={debt.receiver?.displayName}
+                />
+                <AvatarFallback className="bg-zinc-700 text-white text-lg font-semibold">
+                  {debt.receiver?.displayName
+                    ? debt.receiver.displayName[0]
+                    : "?"}
+                </AvatarFallback>
+              </Avatar>
+
+              {!isPaid && (
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                  <CreditCard className="w-3 h-3 text-white" />
+                </div>
+              )}
+            </div>
+
+            {hasDueDate && (
+              <div className="mt-1 text-xs text-red-400 font-medium">
+                到期: {formatDueDate(debt.due_date)}
               </div>
             )}
           </div>
