@@ -219,3 +219,66 @@ def debt_stats(group_id):
     except Exception as e:
         logging.error(f"Error in debt_stats for group {group_id}: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+
+# 🔹 查詢使用者所有群組中需付款的分期債務
+@bp.route("/installments/<uid>", methods=["GET"])
+def get_installment_debts(uid):
+    from .config import db
+    try:
+        groups_ref = db.collection("groups").stream()
+        result = []
+
+        for g in groups_ref:
+            group_id = g.id
+            debts_ref = db.collection("groups").document(
+                group_id).collection("debts").stream()
+
+            for d in debts_ref:
+                debt = d.to_dict()
+                if not debt:
+                    continue
+                # 檢查是否為分期且使用者為付款者
+                if (debt.get("installment") and int(debt.get("installment", 0)) > 0):
+                    for p in debt.get("payer", []):
+                        if p.get("uid") == uid and not p.get("paid", False):
+                            result.append({
+                                **debt,
+                                "group_id": group_id,
+                                "debt_id": d.id
+                            })
+                            break
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# 🔹 查詢使用者所有群組中需付款且有到期日的債務
+@bp.route("/due/<uid>", methods=["GET"])
+def get_due_debts(uid):
+    from .config import db
+    try:
+        groups_ref = db.collection("groups").stream()
+        result = []
+
+        for g in groups_ref:
+            group_id = g.id
+            debts_ref = db.collection("groups").document(
+                group_id).collection("debts").stream()
+
+            for d in debts_ref:
+                debt = d.to_dict()
+                if not debt:
+                    continue
+                if debt.get("due_date"):
+                    for p in debt.get("payer", []):
+                        if p.get("uid") == uid and not p.get("paid", False):
+                            result.append({
+                                **debt,
+                                "group_id": group_id,
+                                "debt_id": d.id
+                            })
+                            break
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
