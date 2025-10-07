@@ -144,3 +144,39 @@ def get_group(group_id):
     data["members"] = members
 
     return jsonify(data)
+
+
+@bp.route("/full/<group_id>", methods=["GET"])
+def get_full_group(group_id):
+    try:
+        group_doc = db.collection("groups").document(group_id).get()
+        if not group_doc.exists:
+            return jsonify({"error": "Group not found"}), 404
+
+        group_data = group_doc.to_dict()
+        group_data["id"] = group_id
+
+        # 補齊成員資訊
+        members = []
+        for m in group_data.get("members", []):
+            if m.get("displayName") and m.get("photoUrl"):
+                members.append(m)
+            else:
+                members.append(get_user_cached(m["uid"]))
+        group_data["members"] = members
+
+        # 同時取得債務資料
+        debts_ref = db.collection("groups").document(
+            group_id).collection("debts")
+        debts = []
+        for doc in debts_ref.stream():
+            d = doc.to_dict()
+            d["id"] = doc.id
+            debts.append(d)
+
+        group_data["debts"] = debts
+
+        return jsonify(group_data)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

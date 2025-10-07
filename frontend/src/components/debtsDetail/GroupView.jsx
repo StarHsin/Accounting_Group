@@ -40,13 +40,25 @@ export default function GroupView() {
   }, []);
 
   // 取得群組資訊
+  // 取得群組 + 債務（整合版）
   useEffect(() => {
     if (!groupId) return;
-    fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/groups/full/${groupId}`)
       .then((res) => res.json())
       .then((data) => {
         setGroupMembers(data.members || []);
         setGroupName(data.name || "群組");
+        setDebts(
+          (data.debts || []).map((d) => ({
+            ...d,
+            groupId,
+            checked: false,
+            installment: d.installment || null,
+            current: d.current || null,
+            note: d.note || "",
+            due_date: d.due_date || null,
+          }))
+        );
       })
       .catch(console.error);
   }, [groupId]);
