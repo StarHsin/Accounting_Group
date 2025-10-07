@@ -40,3 +40,221 @@
 .read-the-docs {
   color: #888;
 }
+
+/* 在你的 global.css 或 app.css 中添加以下樣式 */
+
+/* 日曆容器 */
+.rdp {
+  --rdp-cell-size: 42px;
+  --rdp-accent-color: #10b981;
+  --rdp-background-color: #27272a;
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+  margin: 0;
+  background: linear-gradient(to bottom right, #18181b, #27272a);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* 月份年份選擇器容器 */
+.rdp-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+/* 月份年份下拉選單 */
+.rdp-caption_dropdowns {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rdp-dropdown_year,
+.rdp-dropdown_month {
+  position: relative;
+}
+
+.rdp-dropdown {
+  appearance: none;
+  background: #3f3f46;
+  border: 2px solid #52525b;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 32px 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+}
+
+.rdp-dropdown:hover {
+  border-color: #10b981;
+  background-color: #52525b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.rdp-dropdown:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* 星期標題 */
+.rdp-head_cell {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  padding: 8px 0;
+  text-align: center;
+}
+
+/* 日期表格 */
+.rdp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* 日期單元格 */
+.rdp-cell {
+  text-align: center;
+  padding: 2px;
+}
+
+/* 日期按鈕 */
+.rdp-day {
+  width: var(--rdp-cell-size);
+  height: var(--rdp-cell-size);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.rdp-day:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
+  background: #3f3f46;
+  border-color: #10b981;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* 選中的日期 */
+.rdp-day_selected {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: white !important;
+  font-weight: 700;
+  border-color: #10b981 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+  transform: scale(1.05);
+}
+
+.rdp-day_selected:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+}
+
+/* 今天的日期 */
+.rdp-day_today:not(.rdp-day_selected) {
+  background: #3f3f46;
+  border: 2px solid #10b981;
+  font-weight: 700;
+  color: #10b981;
+}
+
+/* 禁用的日期 */
+.rdp-day_disabled {
+  color: #52525b;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.rdp-day_disabled:hover {
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 其他月份的日期 */
+.rdp-day_outside {
+  color: #71717a;
+  opacity: 0.5;
+}
+
+/* 導航按鈕（如果有的話）*/
+.rdp-nav_button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #3f3f46;
+  border: 2px solid #52525b;
+  color: #10b981;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rdp-nav_button:hover:not(:disabled) {
+  background: #52525b;
+  border-color: #10b981;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.rdp-nav_button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Popover 容器樣式調整 */
+.popover-content-calendar {
+  background: linear-gradient(to bottom right, #18181b, #27272a);
+  border: 2px solid #3f3f46;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* 添加微妙的動畫效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rdp {
+  animation: fadeIn 0.3s ease;
+}
+
+/* 選中日期的脈動效果 */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(16, 185, 129, 0.6);
+  }
+}
+
+.rdp-day_selected {
+  animation: pulse 2s ease-in-out infinite;
+}
