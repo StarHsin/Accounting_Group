@@ -1,4 +1,4 @@
-//frontend/components/Login.jsx
+// frontend/components/Login.jsx
 import React, { useEffect } from "react";
 import { SiLine } from "react-icons/si";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -13,14 +13,16 @@ export default function LoginPage() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // 已登入，直接跳轉
-        navigate("/Homepage");
+        navigate("/Homepage", { replace: true });
       }
     });
     return () => unsubscribe();
   }, [auth, navigate]);
 
   const handleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/login`;
+    // 在 PWA 中確保重定向正確
+    const apiUrl = import.meta.env.VITE_API_URL;
+    window.location.href = `${apiUrl}/api/auth/login`;
   };
 
   return (

@@ -1,6 +1,6 @@
 // frontend/components/InstallmentDebtsPage.jsx
 import { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import TopToolsBar from "./tools/TopToolsBar";
@@ -11,47 +11,68 @@ export default function InstallmentDebtsPage() {
   const [debts, setDebts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authReady, setAuthReady] = useState(false); // 新增：追蹤 auth 準備狀態
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchInstallments = async () => {
-      const auth = getAuth(app);
-      const user = auth.currentUser;
+    const auth = getAuth(app);
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setAuthReady(true); // auth 已準備好
 
       if (!user) {
-        navigate("/");
+        // 未登入，導向登入頁
+        navigate("/", { replace: true });
         return;
       }
 
-      try {
-        setLoading(true);
-        setError(null);
+      // 已登入，載入資料
+      const fetchInstallments = async () => {
+        try {
+          setLoading(true);
+          setError(null);
 
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/debts/installments/${user.uid}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/debts/installments/${
+              user.uid
+            }`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
           }
-        );
 
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          const data = await res.json();
+          setDebts(data);
+        } catch (err) {
+          console.error("Error fetching installment debts:", err);
+          setError("無法載入分期債務，請稍後再試");
+        } finally {
+          setLoading(false);
         }
+      };
 
-        const data = await res.json();
-        setDebts(data);
-      } catch (err) {
-        console.error("Error fetching installment debts:", err);
-        setError("無法載入分期債務，請稍後再試");
-      } finally {
-        setLoading(false);
-      }
-    };
+      fetchInstallments();
+    });
 
-    fetchInstallments();
+    // 如果 auth 還沒準備好，顯示 loading
+    return () => unsubscribe();
   }, [navigate]);
+
+  // 如果 auth 還沒準備好，顯示全域 loading
+  if (!authReady) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900">
+        <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
+        <p className="text-gray-400 mt-3">初始化中...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-900 text-zinc-100 font-sans">

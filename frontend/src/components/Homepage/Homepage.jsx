@@ -1,6 +1,6 @@
 // frontend/components/Homepage/Homepage.jsx
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../firebase";
 import { Loader2 } from "lucide-react";
@@ -13,14 +13,25 @@ export default function Homepage() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authReady, setAuthReady] = useState(false); // 新增：追蹤 auth 準備狀態
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const auth = getAuth(app);
 
+    // 強制從根路徑啟動時檢查登入
+    if (location.pathname !== "/Homepage") {
+      navigate("/Homepage", { replace: true });
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setAuthReady(true); // auth 已準備好
+
       if (!currentUser) {
-        navigate("/");
+        // 未登入，導向登入頁
+        navigate("/", { replace: true });
         return;
       }
 
@@ -51,8 +62,19 @@ export default function Homepage() {
       }
     });
 
+    // 如果 auth 還沒準備好，顯示 loading
     return () => unsubscribe();
-  }, [navigate]);
+  }, [navigate, location]);
+
+  // 如果 auth 還沒準備好，顯示全域 loading
+  if (!authReady) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900">
+        <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
+        <p className="text-gray-400 mt-3">初始化中...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-900 font-sans text-zinc-100">
