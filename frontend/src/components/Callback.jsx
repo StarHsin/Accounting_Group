@@ -1,11 +1,7 @@
 // frontend/components/Callback.jsx
 import React, { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import {
-  getAuth,
-  signInWithCustomToken,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { LoaderCircle } from "lucide-react";
 import { app } from "../firebase";
 
@@ -15,54 +11,29 @@ export default function CallbackPage() {
 
   useEffect(() => {
     const auth = getAuth(app);
+    const token = searchParams.get("token");
+    const error = searchParams.get("error");
 
-    // 檢查是否已經登入
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // 已登入，直接導向 Homepage
+    if (error) {
+      console.error("登入錯誤:", error);
+      navigate("/", { replace: true });
+      return;
+    }
+
+    if (!token) {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    signInWithCustomToken(auth, token)
+      .then(() => {
+        console.log("✅ 登入成功");
         navigate("/Homepage", { replace: true });
-      } else {
-        // 處理 LINE callback
-        processLogin();
-      }
-    });
-
-    const processLogin = async () => {
-      const code = searchParams.get("code");
-      if (!code) {
+      })
+      .catch((err) => {
+        console.error("Firebase 登入失敗:", err);
         navigate("/", { replace: true });
-        return;
-      }
-
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/auth/callback`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code }),
-          }
-        );
-
-        const data = await res.json();
-        if (data.firebase_token) {
-          await signInWithCustomToken(auth, data.firebase_token);
-          console.log("✅ 登入成功:", auth.currentUser);
-          // 延遲導向以確保 auth 狀態更新
-          setTimeout(() => {
-            navigate("/Homepage", { replace: true });
-          }, 500);
-        } else {
-          console.error("登入失敗:", data);
-          navigate("/", { replace: true });
-        }
-      } catch (err) {
-        console.error("登入錯誤:", err);
-        navigate("/", { replace: true });
-      }
-    };
-
-    return () => unsubscribe();
+      });
   }, [searchParams, navigate]);
 
   return (
