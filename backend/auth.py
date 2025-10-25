@@ -23,11 +23,10 @@ def login():
 @bp.route("/callback", methods=["GET"])
 def callback():
     code = request.args.get("code")
-    
+
     if not code:
         # 重定向回前端登入頁
         return redirect("https://accounting-group.vercel.app/?error=no_code")
-
 
     # 1. code 換 token
     token_url = "https://api.line.me/oauth2/v2.1/token"
@@ -39,17 +38,20 @@ def callback():
         "client_secret": LINE_CLIENT_SECRET,
     }
     r = requests.post(token_url, data=payload, headers={
-                      "Content-Type": "application/x-www-form-urlencoded"})
+        "Content-Type": "application/x-www-form-urlencoded"
+    })
     token_data = r.json()
     id_token = token_data.get("id_token")
-    
+
     if not id_token:
         return redirect("https://accounting-group.vercel.app/?error=invalid_token")
-   
+
     # 2. 驗證 id_token
     verify_url = "https://api.line.me/oauth2/v2.1/verify"
     vr = requests.post(verify_url, data={
-                       "id_token": id_token, "client_id": LINE_CLIENT_ID})
+        "id_token": id_token,
+        "client_id": LINE_CLIENT_ID
+    })
     user_info = vr.json()
 
     if "sub" not in user_info:
@@ -69,14 +71,17 @@ def callback():
         )
     except firebase_admin._auth_utils.UserNotFoundError:
         user = auth.create_user(
-            uid=line_uid, display_name=display_name, photo_url=picture)
+            uid=line_uid,
+            display_name=display_name,
+            photo_url=picture
+        )
 
     # 4. 產生 Firebase custom token
     custom_token = auth.create_custom_token(user.uid)
 
-    # ✅ 重定向回前端並帶上 firebase_token
+    # ✅ 重定向回前端 callback 頁面並帶上 token
     frontend_url = f"https://accounting-group.vercel.app/callback?token={custom_token.decode('utf-8')}"
-    return jsonify({"firebase_token": custom_token.decode("utf-8")})
+    return redirect(frontend_url)
 
 
 @bp.route("/me", methods=["GET"])
