@@ -12,6 +12,9 @@ export default defineConfig({
     },
   },
   server: {
+    headers: {
+      'Content-Language': 'zh-TW',
+    },
     proxy: {
       "/auth": {
         target: "https://accounting-group.onrender.com",
