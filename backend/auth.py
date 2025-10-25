@@ -20,16 +20,14 @@ def login():
     return redirect(url)
 
 
-@bp.route("/callback", methods=["GET", "POST"])
+@bp.route("/callback", methods=["GET"])
 def callback():
-    if request.method == "GET":
-        code = request.args.get("code")
-    else:
-        data = request.json
-        code = data.get("code") if data else None
-        
+    code = request.args.get("code")
+    
     if not code:
-        return jsonify({"error": "No code provided"}), 400
+        # 重定向回前端登入頁
+        return redirect("https://accounting-group.vercel.app/?error=no_code")
+
 
     # 1. code 換 token
     token_url = "https://api.line.me/oauth2/v2.1/token"
@@ -44,9 +42,10 @@ def callback():
                       "Content-Type": "application/x-www-form-urlencoded"})
     token_data = r.json()
     id_token = token_data.get("id_token")
+    
     if not id_token:
-        return jsonify({"error": "Failed to get ID token", "details": token_data}), 400
-
+        return redirect("https://accounting-group.vercel.app/?error=invalid_token")
+   
     # 2. 驗證 id_token
     verify_url = "https://api.line.me/oauth2/v2.1/verify"
     vr = requests.post(verify_url, data={
@@ -54,7 +53,7 @@ def callback():
     user_info = vr.json()
 
     if "sub" not in user_info:
-        return jsonify({"error": "Invalid LINE token", "details": user_info}), 401
+        return redirect("https://accounting-group.vercel.app/?error=invalid_line_token")
 
     line_uid = user_info["sub"]
     display_name = user_info.get("name")
@@ -75,6 +74,8 @@ def callback():
     # 4. 產生 Firebase custom token
     custom_token = auth.create_custom_token(user.uid)
 
+    # ✅ 重定向回前端並帶上 firebase_token
+    frontend_url = f"https://accounting-group.vercel.app/callback?token={custom_token.decode('utf-8')}"
     return jsonify({"firebase_token": custom_token.decode("utf-8")})
 
 
