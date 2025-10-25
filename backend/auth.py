@@ -15,7 +15,7 @@ def login():
         f"https://access.line.me/oauth2/v2.1/authorize?"
         f"response_type=code&client_id={LINE_CLIENT_ID}"
         f"&redirect_uri={LINE_REDIRECT_URI}&state=12345"
-        f"&scope=openid%20profile"
+        f"&scope=openid%20profile%20email"
     )
     return redirect(url)
 
