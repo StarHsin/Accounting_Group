@@ -20,10 +20,14 @@ def login():
     return redirect(url)
 
 
-@bp.route("/callback", methods=["POST"])
+@bp.route("/callback", methods=["GET", "POST"])
 def callback():
-    data = request.json
-    code = data.get("code")
+    if request.method == "GET":
+        code = request.args.get("code")
+    else:
+        data = request.json
+        code = data.get("code") if data else None
+        
     if not code:
         return jsonify({"error": "No code provided"}), 400
 
