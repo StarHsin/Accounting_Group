@@ -1,7 +1,7 @@
 # backend/auth.py
 import requests
 from flask import Blueprint, request, jsonify, redirect
-from firebase_admin import auth
+from firebase_admin import auth, firestore
 import firebase_admin
 
 from .config import LINE_CLIENT_ID, LINE_CLIENT_SECRET, LINE_REDIRECT_URI
