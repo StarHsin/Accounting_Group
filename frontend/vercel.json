@@ -6,5 +6,8 @@
         { "key": "Content-Language", "value": "zh-TW" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
