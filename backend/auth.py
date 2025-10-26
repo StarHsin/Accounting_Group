@@ -8,6 +8,11 @@ from .config import LINE_CLIENT_ID, LINE_CLIENT_SECRET, LINE_REDIRECT_URI
 
 bp = Blueprint("auth", __name__)
 
+# 初始化 Firebase app（如果還沒初始化）
+if not firebase_admin._apps:
+    firebase_admin.initialize_app()
+
+db = firestore.client()  # ✅ Firestore 初始化
 
 @bp.route("/login")
 def login():
@@ -61,25 +66,31 @@ def callback():
     display_name = user_info.get("name")
     picture = user_info.get("picture")
 
-    # 3. 建立或取得 Firebase user
+     # 3️⃣ 檢查 Firebase Auth 使用者是否存在
+    created_new_user = False
     try:
         user = auth.get_user(line_uid)
-        auth.update_user(
-            line_uid,
-            display_name=display_name,
-            photo_url=picture
-        )
+        auth.update_user(line_uid, display_name=display_name, photo_url=picture)
     except firebase_admin._auth_utils.UserNotFoundError:
         user = auth.create_user(
             uid=line_uid,
             display_name=display_name,
             photo_url=picture
         )
+        created_new_user = True
 
-    # 4. 產生 Firebase custom token
+    # 4️⃣ 如果是新用戶，建立 Firestore 資料
+    if created_new_user:
+        db.collection("users").document(line_uid).set({
+            "display_name": display_name,
+            "photo_url": picture,
+            "created_at": firestore.SERVER_TIMESTAMP,
+        })
+
+    # 5️⃣ 產生 Firebase custom token
     custom_token = auth.create_custom_token(user.uid)
 
-    # ✅ 重定向回前端 callback 頁面並帶上 token
+    # ✅ 導回前端
     frontend_url = f"https://accounting-group.vercel.app/callback?token={custom_token.decode('utf-8')}"
     return redirect(frontend_url)
 
